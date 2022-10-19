@@ -12,15 +12,24 @@ public class Sound extends com.c0d3m4513r.pluginapi.registry.Sound {
     static {
         new Sound();
     }
-    @NonNull
+    boolean bukkitSoundEnum;
     org.bukkit.Sound bukkitSound;
+    String stringSound;
 
     public Sound(){
         this(org.bukkit.Sound.BLOCK_NOTE_PLING);
     }
     public Sound(@NonNull org.bukkit.Sound soundType){
         if (sound==null) sound=this;
+        bukkitSoundEnum=true;
         bukkitSound =soundType;
+        stringSound=null;
+    }
+    public Sound(@NonNull String soundType){
+        if(sound==null) sound=this;
+        bukkitSoundEnum=false;
+        bukkitSound=null;
+        stringSound=soundType;
     }
 
     @Override
@@ -28,7 +37,7 @@ public class Sound extends com.c0d3m4513r.pluginapi.registry.Sound {
         try{
             return new Sound(org.bukkit.Sound.valueOf(key));
         }catch (IllegalArgumentException ignore){
-            return null;
+            return new Sound(key);
         }
     }
 }
