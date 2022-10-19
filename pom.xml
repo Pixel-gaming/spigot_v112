@@ -4,7 +4,7 @@
     <artifactId>api-impl-spigot-112</artifactId>
     <packaging>jar</packaging>
     <name>Plugin API implementation Spigot v112</name>
-    <version>v112</version>
+    <version>0.0.1</version>
 
     <parent>
         <groupId>com.c0d3m4513r</groupId>
@@ -37,4 +37,16 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
+    <build>
+        <resources>
+            <resource>
+                <targetPath>.</targetPath>
+                <filtering>true</filtering>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>plugin.yml</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
 </project>
