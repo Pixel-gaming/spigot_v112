@@ -17,7 +17,7 @@ public class Sound extends com.c0d3m4513r.pluginapi.registry.Sound {
     String stringSound;
 
     public Sound(){
-        this(org.bukkit.Sound.BLOCK_NOTE_PLING);
+        this("block.note.pling");
     }
     public Sound(@NonNull org.bukkit.Sound soundType){
         if (sound==null) sound=this;

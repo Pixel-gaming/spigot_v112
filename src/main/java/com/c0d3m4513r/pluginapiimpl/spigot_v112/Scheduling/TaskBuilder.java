@@ -1,29 +1,43 @@
 package com.c0d3m4513r.pluginapiimpl.spigot_v112.Scheduling;
 
 import com.c0d3m4513r.pluginapi.Nullable;
+import com.c0d3m4513r.pluginapi.Task;
 import com.c0d3m4513r.pluginapiimpl.spigot_v112.Plugin;
+import lombok.Getter;
 import lombok.NonNull;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.concurrent.TimeUnit;
+@Getter
+public abstract class TaskBuilder extends com.c0d3m4513r.pluginapi.TaskBuilder {
+    protected boolean async = false;
+    protected boolean timer = false;
+    protected long timerTimeAmount = 0;
+    protected TimeUnit timerTimeValue = null;
+    protected boolean deferred = false;
+    protected long deferredTimeAmount = 0;
+    protected TimeUnit deferredTimeValue = null;
+    protected Runnable run = null;
 
-public class TaskBuilder extends com.c0d3m4513r.pluginapi.TaskBuilder {
-    private boolean async = false;
-    private boolean timer = false;
-    private long timerTimeAmount = 0;
-    private TimeUnit timerTimeValue = null;
-    private boolean deferred = false;
-    private long deferredTimeAmount = 0;
-    private TimeUnit deferredTimeValue = null;
-    private Runnable run = null;
+    protected String name = null;
+    protected static Plugin plugin;
 
-    private String name = null;
-    private static Plugin plugin;
+    public static Plugin getPlugin(){
+        return plugin;
+    }
 
-
-    public TaskBuilder(Plugin plugint){
-        TaskBuilder.plugin=plugint;
+    protected TaskBuilder(){}
+    public TaskBuilder(TaskBuilder tb){
+        async=tb.async;
+        timer=tb.timer;
+        timerTimeAmount=tb.timerTimeAmount;
+        timerTimeValue=tb.timerTimeValue;
+        deferred=tb.deferred;
+        deferredTimeAmount=tb.deferredTimeAmount;
+        deferredTimeValue=tb.deferredTimeValue;
+        run=tb.run;
+        name=tb.name;
     }
 
     @Override
@@ -68,13 +82,13 @@ public class TaskBuilder extends com.c0d3m4513r.pluginapi.TaskBuilder {
     }
 
     @Override
-    public com.c0d3m4513r.pluginapi.@NonNull TaskBuilder name(@Nullable String name) {
+    public @NonNull TaskBuilder name(@Nullable String name) {
         this.name=name;
         return this;
     }
 
     @Override
-    public com.c0d3m4513r.pluginapi.@NonNull TaskBuilder reset() {
+    public @NonNull TaskBuilder reset() {
         async = false;
         timer = false;
         timerTimeAmount = 0;
@@ -86,9 +100,8 @@ public class TaskBuilder extends com.c0d3m4513r.pluginapi.TaskBuilder {
         return this;
     }
 
-    @Override
     @NonNull
-    public com.c0d3m4513r.pluginapi.Task build() throws IllegalArgumentException{
+    protected BukkitTask buildInt() throws IllegalArgumentException{
         BukkitTask task;
         if (async){
             if (timer){
@@ -107,8 +120,7 @@ public class TaskBuilder extends com.c0d3m4513r.pluginapi.TaskBuilder {
                 task=Bukkit.getScheduler().runTask(plugin,run);
             }
         }
-
         reset();
-        return new com.c0d3m4513r.pluginapiimpl.spigot_v112.Scheduling.Task(task);
+        return task;
     }
 }

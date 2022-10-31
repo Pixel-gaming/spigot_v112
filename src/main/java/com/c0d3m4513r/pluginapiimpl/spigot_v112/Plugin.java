@@ -6,7 +6,9 @@ import com.c0d3m4513r.pluginapi.TaskBuilder;
 import com.c0d3m4513r.pluginapi.config.iface.IConfigLoaderSaver;
 import com.c0d3m4513r.pluginapi.events.EventRegistrar;
 import com.c0d3m4513r.pluginapi.events.EventType;
+import com.c0d3m4513r.pluginapiimpl.spigot_v112.Scheduling.TaskScheduler;
 import lombok.NonNull;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -22,7 +24,7 @@ public class Plugin extends JavaPlugin implements IConfigLoaderSaver {
     public void onLoad() {
         try {
             saveDefaultConfig();//This only triggers, if the config file doesn't exist
-            api=new ApiImpl(getLogger(),this);
+            api=new ApiImpl(Bukkit.getLogger(),this);
             API.getConfig().loadValue();
             EventRegistrar.submitEvent(EventType.preinit);
         }catch (Throwable t){
@@ -38,12 +40,11 @@ public class Plugin extends JavaPlugin implements IConfigLoaderSaver {
 
     @Override
     public void onEnable() {
+        new TaskScheduler();
         EventRegistrar.submitEvent(EventType.commandRegister);
         EventRegistrar.submitEvent(EventType.init);
         //Idea: The server will only start ticking, once everything is loaded.
-        TaskBuilder.builder().executer(()->{
-            EventRegistrar.submitEvent(EventType.load_complete);
-        }).deferred(0, TimeUnit.MILLISECONDS).build();
+        TaskScheduler.builder().reset().executer(()-> EventRegistrar.submitEvent(EventType.load_complete)).build();
     }
 
     @Override

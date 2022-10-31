@@ -2,6 +2,7 @@ package com.c0d3m4513r.pluginapiimpl.spigot_v112;
 
 import com.c0d3m4513r.pluginapi.Task;
 import com.c0d3m4513r.pluginapi.World;
+import com.c0d3m4513r.pluginapiimpl.spigot_v112.World.BukkitWorld;
 import lombok.NonNull;
 import lombok.val;
 import org.bukkit.Bukkit;
@@ -40,7 +41,7 @@ public class Server extends com.c0d3m4513r.pluginapi.Server {
 
     @Override
     public Collection<World> getWorlds() {
-        return Bukkit.getWorlds().parallelStream().map(com.c0d3m4513r.pluginapiimpl.spigot_v112.World.World::new).collect(Collectors.toList());
+        return Bukkit.getWorlds().parallelStream().map(BukkitWorld::new).map(com.c0d3m4513r.pluginapiimpl.spigot_v112.World.World::new).collect(Collectors.toList());
     }
 
     @Override
