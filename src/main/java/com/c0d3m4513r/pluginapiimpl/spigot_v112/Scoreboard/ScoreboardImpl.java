@@ -4,6 +4,7 @@ import com.c0d3m4513r.pluginapi.Nullable;
 import com.c0d3m4513r.pluginapi.Scoreboard.DisplaySlot;
 import com.c0d3m4513r.pluginapi.Scoreboard.Objective;
 import com.c0d3m4513r.pluginapi.Scoreboard.Scoreboard;
+import lombok.NonNull;
 import lombok.Value;
 import org.bukkit.Bukkit;
 @Value
@@ -27,7 +28,7 @@ public class ScoreboardImpl extends Scoreboard {
     }
 
     @Override
-    public void updateDisplaySlot(@Nullable Objective objective, DisplaySlot displaySlot) throws IllegalStateException {
+    public void updateDisplaySlot(@Nullable Objective objective, @NonNull DisplaySlot displaySlot) throws IllegalStateException {
         final org.bukkit.scoreboard.DisplaySlot bukkitDisplaySlot;
         switch (displaySlot){
             case List:
@@ -42,7 +43,14 @@ public class ScoreboardImpl extends Scoreboard {
             default:
                 throw new RuntimeException("Unknown DisplaySlot value");
         }
-        ((ObjectiveImpl)objective).getObjective().setDisplaySlot(bukkitDisplaySlot);
+        org.bukkit.scoreboard.Objective bukkitObjective;
+        if (objective!=null){
+            bukkitObjective=((ObjectiveImpl)objective).getObjective();
+        }else{
+            bukkitObjective = bukkitScoreboard.getObjective(bukkitDisplaySlot);
+            if (bukkitObjective==null) return;
+        }
+        bukkitObjective.setDisplaySlot(bukkitDisplaySlot);
     }
 
     @Override
