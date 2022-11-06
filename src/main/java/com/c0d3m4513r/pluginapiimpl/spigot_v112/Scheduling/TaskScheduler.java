@@ -7,17 +7,24 @@ import com.c0d3m4513r.pluginapi.events.EventRegistrar;
 import com.c0d3m4513r.pluginapi.events.EventType;
 import com.c0d3m4513r.pluginapiimpl.spigot_v112.Plugin;
 import lombok.NonNull;
-import lombok.val;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
-public class TaskScheduler extends TaskBuilder{
+@Deprecated
+class TaskScheduler extends TaskBuilder{
 
     public static TaskScheduler scheduler;
     @NonNull
-    private static List<ScheduledTask> tasks = new LinkedList<>();
+    private static final Set<ScheduledTask> tasks = new ConcurrentSkipListSet<>();
+    private static final Lock lock= new ReentrantLock();
 
     @NonNull
     private BukkitTask task;
@@ -42,6 +49,7 @@ public class TaskScheduler extends TaskBuilder{
         timerTimeValue=null;
         timerTimeAmount=1;
         deferred=false;
+        deferredTimeAmount=0;
         run=this::run;
         task=buildInt();
         //register everything to be destroyed
@@ -49,9 +57,12 @@ public class TaskScheduler extends TaskBuilder{
     }
 
     private void run(){
-        for(val t:tasks){
-            t.run();
-        }
+        if(lock.tryLock())
+            try {
+                tasks.removeIf(task->!task.run());
+            } finally {
+                lock.unlock();
+            }
     }
 
     @Override
@@ -65,13 +76,15 @@ public class TaskScheduler extends TaskBuilder{
         return t;
     }
 
-    static boolean cancel(ScheduledTask task){
+    boolean cancel(ScheduledTask task){
         return tasks.remove(task);
     }
     private void shutdown(){
         API.getLogger().info("Shutting down TaskScheduler! Server is Restarting.");
         task.cancel();
-        tasks = new LinkedList<>();
+        //this variable is necessary for types to work correctly
+        List<ScheduledTask> l = Collections.emptyList();
+        tasks.retainAll(l);
     }
 
 }

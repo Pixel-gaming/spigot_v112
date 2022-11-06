@@ -8,9 +8,11 @@ import lombok.NonNull;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.concurrent.TimeUnit;
+import java.util.Objects;
+import java.util.concurrent.*;
+
 @Getter
-public abstract class TaskBuilder extends com.c0d3m4513r.pluginapi.TaskBuilder {
+public class TaskBuilder extends com.c0d3m4513r.pluginapi.TaskBuilder {
     protected boolean async = false;
     protected boolean timer = false;
     protected long timerTimeAmount = 0;
@@ -19,15 +21,19 @@ public abstract class TaskBuilder extends com.c0d3m4513r.pluginapi.TaskBuilder {
     protected long deferredTimeAmount = 0;
     protected TimeUnit deferredTimeValue = null;
     protected Runnable run = null;
-
     protected String name = null;
     protected static Plugin plugin;
+    protected static ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
 
     public static Plugin getPlugin(){
         return plugin;
     }
 
     protected TaskBuilder(){}
+    public TaskBuilder(Plugin plugin){
+        TaskBuilder.plugin = plugin;
+        construct=TaskBuilder::new;
+    }
     public TaskBuilder(TaskBuilder tb){
         async=tb.async;
         timer=tb.timer;
@@ -98,6 +104,24 @@ public abstract class TaskBuilder extends com.c0d3m4513r.pluginapi.TaskBuilder {
         deferredTimeValue = null;
         run = null;
         return this;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")//casting to Object should ALWAYS be safe!
+    public @NonNull Task build() throws IllegalArgumentException {
+        ScheduledFuture<?> future;
+        Runnable taskRunnable = ()->{
+            if (async) run.run();
+            else Bukkit.getScheduler().runTask(plugin,run);
+        };
+        if (timer){
+            future=executor.scheduleAtFixedRate(taskRunnable,deferredTimeAmount,timerTimeAmount,timerTimeValue);
+        }else if (deferred){
+            future=executor.schedule(taskRunnable,deferredTimeAmount,deferredTimeValue);
+        }else{
+            future=executor.schedule(taskRunnable,0,TimeUnit.NANOSECONDS);
+        }
+        return new ScheduledFutureTask<>((ScheduledFuture<Object>) future, new TaskBuilder(this));
     }
 
     @NonNull

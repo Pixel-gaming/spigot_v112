@@ -2,11 +2,10 @@ package com.c0d3m4513r.pluginapiimpl.spigot_v112;
 
 import com.c0d3m4513r.pluginapi.API;
 import com.c0d3m4513r.pluginapi.Nullable;
-import com.c0d3m4513r.pluginapi.TaskBuilder;
 import com.c0d3m4513r.pluginapi.config.iface.IConfigLoaderSaver;
 import com.c0d3m4513r.pluginapi.events.EventRegistrar;
 import com.c0d3m4513r.pluginapi.events.EventType;
-import com.c0d3m4513r.pluginapiimpl.spigot_v112.Scheduling.TaskScheduler;
+import com.c0d3m4513r.pluginapiimpl.spigot_v112.Scheduling.TaskBuilder;
 import lombok.NonNull;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -40,11 +39,10 @@ public class Plugin extends JavaPlugin implements IConfigLoaderSaver {
 
     @Override
     public void onEnable() {
-        new TaskScheduler();
         EventRegistrar.submitEvent(EventType.commandRegister);
         EventRegistrar.submitEvent(EventType.init);
         //Idea: The server will only start ticking, once everything is loaded.
-        TaskScheduler.builder().reset().executer(()-> EventRegistrar.submitEvent(EventType.load_complete)).build();
+        TaskBuilder.builder().reset().executer(()-> EventRegistrar.submitEvent(EventType.load_complete)).build();
     }
 
     @Override

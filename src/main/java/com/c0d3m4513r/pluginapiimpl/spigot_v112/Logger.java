@@ -19,6 +19,15 @@ public class Logger implements org.slf4j.Logger {
     @Getter
     java.util.logging.Logger logger;
 
+    private void log(java.util.logging.Level level, String msg, Object... args){
+        String log = msg;
+        if(args!=null) for (val o:args) {
+            //noinspection RegExpRedundantEscape
+            log=log.replaceFirst("\\{\\}",o!=null?o.toString():"null");
+        }
+        logger.log(level,log);
+    }
+
     @Override
     public String getName() {
         return Plugin.name;
@@ -31,27 +40,27 @@ public class Logger implements org.slf4j.Logger {
 
     @Override
     public void trace(String msg) {
-        logger.log(java.util.logging.Level.FINER,msg);
+        log(java.util.logging.Level.FINER,msg);
     }
 
     @Override
     public void trace(String format, Object arg) {
-        logger.log(java.util.logging.Level.FINER,format,arg);
+        log(java.util.logging.Level.FINER,format,arg);
     }
 
     @Override
     public void trace(String format, Object arg1, Object arg2) {
-        logger.log(java.util.logging.Level.FINER,format,new Object[]{arg1,arg2});
+        log(java.util.logging.Level.FINER,format, arg1,arg2);
     }
 
     @Override
     public void trace(String format, Object... arguments) {
-        logger.log(java.util.logging.Level.FINER,format, Arrays.stream(arguments).toArray());
+        log(java.util.logging.Level.FINER,format, Arrays.stream(arguments).toArray());
     }
 
     @Override
     public void trace(String msg, Throwable t) {
-        logger.log(java.util.logging.Level.FINER,msg,t);
+        log(java.util.logging.Level.FINER,msg,t);
     }
 
     @Override
@@ -91,29 +100,29 @@ public class Logger implements org.slf4j.Logger {
 
     @Override
     public void debug(String msg) {
-        logger.log(java.util.logging.Level.FINE,msg);
+        log(java.util.logging.Level.FINE,msg);
     }
 
     @Override
     public void debug(String format, Object arg) {
-        logger.log(java.util.logging.Level.FINE,format,arg);
+        log(java.util.logging.Level.FINE,format,arg);
 
     }
 
     @Override
     public void debug(String format, Object arg1, Object arg2) {
-        logger.log(java.util.logging.Level.FINE,format,new Object[]{arg1,arg2});
+        log(java.util.logging.Level.FINE,format, arg1,arg2);
 
     }
 
     @Override
     public void debug(String format, Object... arguments) {
-        logger.log(java.util.logging.Level.FINE,format, Arrays.stream(arguments).toArray());
+        log(java.util.logging.Level.FINE,format, Arrays.stream(arguments).toArray());
     }
 
     @Override
     public void debug(String msg, Throwable t) {
-        logger.log(java.util.logging.Level.FINE,msg,t);
+        log(java.util.logging.Level.FINE,msg,t);
     }
 
     @Override
@@ -153,27 +162,27 @@ public class Logger implements org.slf4j.Logger {
 
     @Override
     public void info(String msg) {
-        logger.log(java.util.logging.Level.INFO,msg);
+        log(java.util.logging.Level.INFO,msg);
     }
 
     @Override
     public void info(String format, Object arg) {
-        logger.log(java.util.logging.Level.INFO,format,arg);
+        log(java.util.logging.Level.INFO,format,arg);
     }
 
     @Override
     public void info(String format, Object arg1, Object arg2) {
-        logger.log(java.util.logging.Level.INFO,format,new Object[]{arg1,arg2});
+        log(java.util.logging.Level.INFO,format, arg1,arg2);
     }
 
     @Override
     public void info(String format, Object... arguments) {
-        logger.log(java.util.logging.Level.INFO,format, Arrays.stream(arguments).toArray());
+        log(java.util.logging.Level.INFO,format, Arrays.stream(arguments).toArray());
     }
 
     @Override
     public void info(String msg, Throwable t) {
-        logger.log(java.util.logging.Level.INFO,msg,t);
+        log(java.util.logging.Level.INFO,msg,t);
     }
 
     @Override
@@ -213,27 +222,27 @@ public class Logger implements org.slf4j.Logger {
 
     @Override
     public void warn(String msg) {
-        logger.log(java.util.logging.Level.WARNING,msg);
+        log(java.util.logging.Level.WARNING,msg);
     }
 
     @Override
     public void warn(String format, Object arg) {
-        logger.log(java.util.logging.Level.WARNING,format,arg);
+        log(java.util.logging.Level.WARNING,format,arg);
     }
 
     @Override
     public void warn(String format, Object... arguments) {
-        logger.log(java.util.logging.Level.WARNING,format, Arrays.stream(arguments).toArray());
+        log(java.util.logging.Level.WARNING,format, Arrays.stream(arguments).toArray());
     }
 
     @Override
     public void warn(String format, Object arg1, Object arg2) {
-        logger.log(java.util.logging.Level.WARNING,format,new Object[]{arg1,arg2});
+        log(java.util.logging.Level.WARNING,format, arg1,arg2);
     }
 
     @Override
     public void warn(String msg, Throwable t) {
-        logger.log(java.util.logging.Level.WARNING,msg,t);
+        log(java.util.logging.Level.WARNING,msg,t);
     }
 
     @Override
@@ -273,27 +282,27 @@ public class Logger implements org.slf4j.Logger {
 
     @Override
     public void error(String msg) {
-        logger.log(java.util.logging.Level.SEVERE,msg);
+        log(java.util.logging.Level.SEVERE,msg);
     }
 
     @Override
     public void error(String format, Object arg) {
-        logger.log(java.util.logging.Level.SEVERE,format,arg);
+        log(java.util.logging.Level.SEVERE,format,arg);
     }
 
     @Override
     public void error(String format, Object arg1, Object arg2) {
-        logger.log(java.util.logging.Level.SEVERE,format,new Object[]{arg1,arg2});
+        log(java.util.logging.Level.SEVERE,format, arg1,arg2);
     }
 
     @Override
     public void error(String format, Object... arguments) {
-        logger.log(java.util.logging.Level.SEVERE,format, Arrays.stream(arguments).toArray());
+        log(java.util.logging.Level.SEVERE,format, Arrays.stream(arguments).toArray());
     }
 
     @Override
     public void error(String msg, Throwable t) {
-        logger.log(java.util.logging.Level.SEVERE,msg,t);
+        log(java.util.logging.Level.SEVERE,msg,t);
     }
 
     @Override
