@@ -8,7 +8,6 @@ import lombok.NonNull;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.Objects;
 import java.util.concurrent.*;
 
 @Getter
@@ -34,6 +33,8 @@ public class TaskBuilder extends com.c0d3m4513r.pluginapi.TaskBuilder {
         TaskBuilder.plugin = plugin;
         construct=TaskBuilder::new;
     }
+
+    //shallow copy constructor
     public TaskBuilder(TaskBuilder tb){
         async=tb.async;
         timer=tb.timer;
@@ -80,6 +81,13 @@ public class TaskBuilder extends com.c0d3m4513r.pluginapi.TaskBuilder {
         return this;
     }
 
+    @Override
+    public @NonNull TaskBuilder timer(long ticks) {
+        timer=true;
+        timerTimeAmount=ticks;
+        timerTimeValue=null;
+        return this;
+    }
 
     @Override
     public @NonNull TaskBuilder executer(@NonNull Runnable run) {
@@ -107,21 +115,19 @@ public class TaskBuilder extends com.c0d3m4513r.pluginapi.TaskBuilder {
     }
 
     @Override
-    @SuppressWarnings("unchecked")//casting to Object should ALWAYS be safe!
     public @NonNull Task build() throws IllegalArgumentException {
         ScheduledFuture<?> future;
-        Runnable taskRunnable = ()->{
-            if (async) run.run();
-            else Bukkit.getScheduler().runTask(plugin,run);
-        };
-        if (timer){
-            future=executor.scheduleAtFixedRate(taskRunnable,deferredTimeAmount,timerTimeAmount,timerTimeValue);
-        }else if (deferred){
-            future=executor.schedule(taskRunnable,deferredTimeAmount,deferredTimeValue);
-        }else{
-            future=executor.schedule(taskRunnable,0,TimeUnit.NANOSECONDS);
+        if(async){
+            if (timer && timerTimeValue != null){
+                future=executor.scheduleAtFixedRate(run,deferredTimeAmount,timerTimeAmount,timerTimeValue);
+            }else if (deferred){
+                future=executor.schedule(run,deferredTimeAmount,deferredTimeValue);
+            }else{
+                future=executor.schedule(run,0,TimeUnit.NANOSECONDS);
+            }
+            return new ScheduledFutureTask<>(future, new TaskBuilder(this));
         }
-        return new ScheduledFutureTask<>((ScheduledFuture<Object>) future, new TaskBuilder(this));
+        return new com.c0d3m4513r.pluginapiimpl.spigot_v112.Scheduling.Task(buildInt());
     }
 
     @NonNull
@@ -137,7 +143,7 @@ public class TaskBuilder extends com.c0d3m4513r.pluginapi.TaskBuilder {
             }
         }else{
             if (timer){
-                task=Bukkit.getScheduler().runTaskTimer(plugin,run,deferredTimeAmount,timerTimeAmount);
+                 task=Bukkit.getScheduler().runTaskTimer(plugin,run,deferredTimeAmount,timerTimeAmount);
             }else if (deferred){
                 task=Bukkit.getScheduler().runTaskLater(plugin,run,deferredTimeAmount);
             }else {
