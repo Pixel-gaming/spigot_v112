@@ -1,11 +1,13 @@
 package com.c0d3m4513r.pluginapiimpl.spigot_v112.Scoreboard;
 
+import com.c0d3m4513r.pluginapi.API;
 import com.c0d3m4513r.pluginapi.Nullable;
 import com.c0d3m4513r.pluginapi.Scoreboard.DisplaySlot;
 import com.c0d3m4513r.pluginapi.Scoreboard.Objective;
 import com.c0d3m4513r.pluginapi.Scoreboard.Scoreboard;
 import lombok.NonNull;
 import lombok.Value;
+import lombok.var;
 import org.bukkit.Bukkit;
 @Value
 public class ScoreboardImpl extends Scoreboard {
@@ -28,21 +30,15 @@ public class ScoreboardImpl extends Scoreboard {
     }
 
     @Override
+    public void clearSlot(@NonNull DisplaySlot slot) {
+        var bukkitDisplaySlot = DisplaySlotExtension.ConvertDisplaySlot(slot);
+        bukkitScoreboard.clearSlot(bukkitDisplaySlot);
+    }
+
+    @Override
     public void updateDisplaySlot(@Nullable Objective objective, @NonNull DisplaySlot displaySlot) throws IllegalStateException {
-        final org.bukkit.scoreboard.DisplaySlot bukkitDisplaySlot;
-        switch (displaySlot){
-            case List:
-                bukkitDisplaySlot = org.bukkit.scoreboard.DisplaySlot.PLAYER_LIST;
-                break;
-            case Below_Name:
-                bukkitDisplaySlot = org.bukkit.scoreboard.DisplaySlot.BELOW_NAME;
-                break;
-            case Sidebar:
-                bukkitDisplaySlot = org.bukkit.scoreboard.DisplaySlot.SIDEBAR;
-                break;
-            default:
-                throw new RuntimeException("Unknown DisplaySlot value");
-        }
+        var bukkitDisplaySlot = DisplaySlotExtension.ConvertDisplaySlot(displaySlot);
+
         org.bukkit.scoreboard.Objective bukkitObjective;
         if (objective!=null){
             bukkitObjective=((ObjectiveImpl)objective).getObjective();
