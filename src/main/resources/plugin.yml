@@ -1,4 +1,3 @@
 name: ${name}
 main: ${bukkitPluginClass}
-api-version: 1.12
 version: ${versionName}
