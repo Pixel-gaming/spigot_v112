@@ -6,6 +6,7 @@ import org.slf4j.Marker;
 import org.slf4j.event.Level;
 
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @EqualsAndHashCode
@@ -18,7 +19,6 @@ public class Logger implements org.slf4j.Logger {
     @NonNull
     @Getter
     java.util.logging.Logger logger;
-
     private void log(java.util.logging.Level level, String msg, Object... args){
         String log = msg;
         if(args!=null) for (val o:args) {
@@ -60,7 +60,7 @@ public class Logger implements org.slf4j.Logger {
 
     @Override
     public void trace(String msg, Throwable t) {
-        log(java.util.logging.Level.FINER,msg,t);
+        logger.log(java.util.logging.Level.FINER,msg,t);
     }
 
     @Override
@@ -90,7 +90,7 @@ public class Logger implements org.slf4j.Logger {
 
     @Override
     public void trace(Marker marker, String msg, Throwable t) {
-        trace(msg,t);
+        logger.log(java.util.logging.Level.FINER,msg,t);
     }
 
     @Override
@@ -122,7 +122,7 @@ public class Logger implements org.slf4j.Logger {
 
     @Override
     public void debug(String msg, Throwable t) {
-        log(java.util.logging.Level.FINE,msg,t);
+        logger.log(java.util.logging.Level.FINE,msg,t);
     }
 
     @Override
@@ -182,7 +182,7 @@ public class Logger implements org.slf4j.Logger {
 
     @Override
     public void info(String msg, Throwable t) {
-        log(java.util.logging.Level.INFO,msg,t);
+        logger.log(java.util.logging.Level.INFO,msg,t);;
     }
 
     @Override
@@ -242,7 +242,7 @@ public class Logger implements org.slf4j.Logger {
 
     @Override
     public void warn(String msg, Throwable t) {
-        log(java.util.logging.Level.WARNING,msg,t);
+        logger.log(java.util.logging.Level.WARNING,msg,t);
     }
 
     @Override
@@ -302,7 +302,7 @@ public class Logger implements org.slf4j.Logger {
 
     @Override
     public void error(String msg, Throwable t) {
-        log(java.util.logging.Level.SEVERE,msg,t);
+        logger.log(java.util.logging.Level.SEVERE,msg,t);
     }
 
     @Override

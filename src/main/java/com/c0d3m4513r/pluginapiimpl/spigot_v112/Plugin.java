@@ -9,10 +9,11 @@ import com.c0d3m4513r.pluginapiimpl.spigot_v112.Scheduling.TaskBuilder;
 import lombok.NonNull;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.event.Event;
+import org.bukkit.event.EventPriority;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 
@@ -41,6 +42,18 @@ public class Plugin extends JavaPlugin implements IConfigLoaderSaver {
     public void onEnable() {
         EventRegistrar.submitEvent(EventType.commandRegister);
         EventRegistrar.submitEvent(EventType.init);
+        try{
+            getLogger().info("[spigot_v112] Trying to use org.bukkit.event.server.ServerLoadEvent for getting a serverStarting event.");
+            Class<? extends Event> serverLoadEvent = Class.forName("org.bukkit.event.server.ServerLoadEvent").asSubclass(Event.class);
+            getLogger().info("[spigot_v112] We are running on a Bukkit version higher than 1.12, since ServerLoadEvent is supported. Great!");
+            getServer().getPluginManager().registerEvent(serverLoadEvent, new DummyListener(), EventPriority.MONITOR, (listener, event) -> {
+                EventRegistrar.submitEvent(EventType.serverStarting);
+            }, this);
+        }catch (ClassNotFoundException e){
+            getLogger().info("[spigot_v112] We are running on a Bukkit which does not support ServerLoadEvent. Falling back to a Task, that executes on the first tick.");
+            Bukkit.getScheduler().runTask(this, ()->EventRegistrar.submitEvent(EventType.serverStarting));
+        }
+
         //Idea: The server will only start ticking, once everything is loaded.
         TaskBuilder.builder().reset().executer(()-> EventRegistrar.submitEvent(EventType.load_complete)).build();
     }
