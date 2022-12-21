@@ -1,5 +1,6 @@
 package com.c0d3m4513r.pluginapiimpl.spigot_v112;
 
+import com.c0d3m4513r.logger.JavaUtilLogger;
 import com.c0d3m4513r.pluginapi.API;
 import com.c0d3m4513r.pluginapiimpl.spigot_v112.Registry.Sound;
 import com.c0d3m4513r.pluginapiimpl.spigot_v112.Scoreboard.ObjectiveImpl;
@@ -14,7 +15,7 @@ import java.util.logging.Logger;
 
 public class ApiImpl extends API {
     ApiImpl(Logger logger,@NonNull Plugin plugin){
-        API.logger = new com.c0d3m4513r.pluginapiimpl.spigot_v112.Logger(logger);
+        API.logger = new JavaUtilLogger(logger);
         API.server = new Server();
         API.commandRegistrar=new SpigotCommandRegistrar(plugin);
 
