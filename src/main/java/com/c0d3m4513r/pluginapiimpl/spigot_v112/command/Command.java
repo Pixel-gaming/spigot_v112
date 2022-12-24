@@ -23,7 +23,7 @@ public class Command extends org.bukkit.command.Command {
     @Override
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
         try{
-            CommandResult result = (CommandResult) command.process(new CommandSource(sender),String.join(" ",args));
+            CommandResult result = (CommandResult) command.process(new CommandSource(sender),args);
             return result.getResult();
         } catch (CommandException e) {
             API.getLogger().error("Error whilst executing command '/"+commandLabel+" "+String.join(" ",args)+"'. Message is '"+e.getMessage()+"'. Error is:",e.getE());
@@ -34,7 +34,7 @@ public class Command extends org.bukkit.command.Command {
     @Override
     public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
         try {
-            return command.getSuggestions(new CommandSource(sender),String.join(" ",args));
+            return command.getSuggestions(new CommandSource(sender),args);
         } catch (CommandException e) {
             API.getLogger().warn("Error whilst executing command '"+alias+"' : ",e);
             API.getLogger().info("Falling back to default completer.");
