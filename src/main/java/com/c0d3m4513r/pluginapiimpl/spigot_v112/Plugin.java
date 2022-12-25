@@ -15,6 +15,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 
 public class Plugin extends JavaPlugin implements IConfigLoaderSaver {
@@ -46,9 +47,7 @@ public class Plugin extends JavaPlugin implements IConfigLoaderSaver {
             getLogger().info("[spigot_v112] Trying to use org.bukkit.event.server.ServerLoadEvent for getting a serverStarting event.");
             Class<? extends Event> serverLoadEvent = Class.forName("org.bukkit.event.server.ServerLoadEvent").asSubclass(Event.class);
             getLogger().info("[spigot_v112] We are running on a Bukkit version higher than 1.12, since ServerLoadEvent is supported. Great!");
-            getServer().getPluginManager().registerEvent(serverLoadEvent, new DummyListener(), EventPriority.MONITOR, (listener, event) -> {
-                EventRegistrar.submitEvent(EventType.serverStarting);
-            }, this);
+            getServer().getPluginManager().registerEvent(serverLoadEvent, new DummyListener(), EventPriority.MONITOR, (listener, event) -> EventRegistrar.submitEvent(EventType.serverStarting), this);
         }catch (ClassNotFoundException e){
             getLogger().info("[spigot_v112] We are running on a Bukkit which does not support ServerLoadEvent. Falling back to a Task, that executes on the first tick.");
             Bukkit.getScheduler().runTask(this, ()->EventRegistrar.submitEvent(EventType.serverStarting));
@@ -69,11 +68,10 @@ public class Plugin extends JavaPlugin implements IConfigLoaderSaver {
     }
 
     @Override
-    @SuppressWarnings("unchecked")//Either it works, or we catch the ClassCastException.
     public @Nullable <T> List<T> loadConfigKeyList(String path, Class<T> type) {
         try {
             FileConfiguration config = getConfig();
-            return (List<T>) config.getList(path);
+            return config.getList(path).stream().map(type::cast).collect(Collectors.toList());
         } catch (ClassCastException e) {
             return null;
         }
